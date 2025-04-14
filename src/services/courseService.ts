@@ -9,9 +9,17 @@ export interface Course {
   max_students: number
 }
 
+interface FilterParams {
+  page?: number;
+  limit?: number;
+  name?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
 export const courseService = {
-  getAll: async () => {
-    const response = await api.get('/course-groups')
+  getAll: async (params: FilterParams = {}) => {
+    const response = await api.get('/course-groups', { params })
     return response.data
   },
 
