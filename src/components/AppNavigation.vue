@@ -3,9 +3,8 @@
     <div class="pa-2">
       <v-btn
         variant="text"
-        icon="mdi-chevron-left"
+        :icon="rail ? 'mdi-chevron-right' : 'mdi-chevron-left'"
         @click.stop="toggleRail"
-        v-if="!rail"
       ></v-btn>
     </div>
 
@@ -23,7 +22,7 @@
       <v-list-item
         v-for="item in menuItems"
         :key="item.value"
-        :title="item.title"
+        :title="rail ? '' : item.title"
         :prepend-icon="item.icon"
         :to="item.to"
         :value="item.value"
@@ -45,6 +44,7 @@
     </template>
   </v-navigation-drawer>
 </template>
+
 
 <script setup lang="ts">
 import { ref } from 'vue'
