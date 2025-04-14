@@ -8,12 +8,19 @@
       ></v-btn>
     </div>
 
+
     <div class="px-2" v-if="!rail">
-      <v-avatar class="mb-2" size="64" rounded="0">
-        <v-img src="/api/placeholder/80/80" alt="Avatar"></v-img>
-      </v-avatar>
-      <div class="text-subtitle-1 font-weight-bold">Admin</div>
-      <div class="text-caption text-medium-emphasis">admin@exemplo.com</div>
+      <div class="text-subtitle-1 font-weight-bold">{{ user.name }}</div>
+      <div class="text-caption text-medium-emphasis mb-2">{{ user.email }}</div>
+      <div class="d-flex justify-start">
+        <v-chip
+          size="small"
+          color="primary"
+          class="text-uppercase"
+        >
+          {{ user.role }}
+        </v-chip>
+      </div>
     </div>
 
     <v-divider class="my-2"></v-divider>
@@ -47,16 +54,26 @@
 
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const drawer = ref(true)
 const rail = ref(false)
+const user = ref({
+  name: '',
+  email: '',
+  role: ''
+})
+
+onMounted(() => {
+  const userData = localStorage.getItem('user')
+  if (userData) {
+    user.value = JSON.parse(userData)
+  }
+})
 
 const menuItems = [
-  { title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/', value: 'dashboard' },
   { title: 'Alunos', icon: 'mdi-account-multiple', to: '/students', value: 'students' },
-  { title: 'Matrículas', icon: 'mdi-school', to: '/enrollments', value: 'enrollments' },
-  { title: 'Configurações', icon: 'mdi-cog', to: '/settings', value: 'settings' }
+  { title: 'Cursos', icon: 'mdi-book', to: '/courses', value: 'courses' },
 ]
 
 const toggleRail = () => {
