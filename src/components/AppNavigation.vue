@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer v-model="drawer" :rail="rail" permanent>
+  <v-navigation-drawer color="primary" v-model="drawer" :rail="rail" permanent>
     <div class="pa-2">
       <v-btn
         variant="text"
@@ -15,7 +15,7 @@
       <div class="d-flex justify-start">
         <v-chip
           size="small"
-          color="primary"
+          color="dark"
           class="text-uppercase"
         >
           {{ user.role }}
