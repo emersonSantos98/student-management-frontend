@@ -41,7 +41,6 @@
       </v-col>
     </v-row>
 
-    <!-- Snackbar para mensagens de erro -->
     <v-snackbar
       v-model="errorSnackbar.show"
       color="error"
@@ -75,7 +74,6 @@ const errorSnackbar = ref({
   text: ''
 })
 
-// Regras de validação
 const rules = {
   required: (v: string) => !!v || 'Campo obrigatório',
   email: (v: string) => {
@@ -85,7 +83,6 @@ const rules = {
 }
 
 const login = async () => {
-  // Validação do formulário (assumindo que você tem um método validate no ref do form)
   const formEl = form.value as { validate: () => Promise<boolean> } | null
   const isValid = await formEl?.validate()
 
@@ -98,10 +95,10 @@ const login = async () => {
       password: password.value
     })
 
-    // Salvar token no localStorage
-    localStorage.setItem('token', response.data.token)
+    localStorage.setItem('token', response.data.data.token)
 
-    // Redirecionar para a página principal
+    localStorage.setItem('user', JSON.stringify(response.data.data.user))
+
     router.push('/')
   } catch (error: any) {
     errorSnackbar.value = {
