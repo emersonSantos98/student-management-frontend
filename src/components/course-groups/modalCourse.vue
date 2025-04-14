@@ -7,6 +7,7 @@
   >
     <v-card>
       <v-toolbar :title="isEditMode ? 'Editar Turma' : 'Cadastrar Turma'"></v-toolbar>
+
       <v-card-text>
         <v-form ref="form" @submit.prevent="handleSubmit">
           <v-container>
@@ -22,7 +23,7 @@
 
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="formData.max_students"
+                  v-model.number="formData.max_students"
                   label="Número de Vagas"
                   type="number"
                   min="1"
@@ -93,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, defineProps, defineEmits } from 'vue';
+import { ref, computed, watch, defineProps, defineEmits } from 'vue';
 
 interface CourseGroup {
   id?: number;
@@ -102,6 +103,7 @@ interface CourseGroup {
   start_date: string;
   end_date: string;
   max_students: number;
+  activeStudentsCount?: number;
 }
 
 const props = defineProps({
@@ -144,15 +146,37 @@ const formData = ref<CourseGroup>({ ...defaultFormData });
 watch(() => props.courseData, (newData) => {
   if (newData) {
     formData.value = { ...newData };
+
+    if (formData.value.start_date) {
+      formData.value.start_date = formatDateForInput(formData.value.start_date);
+    }
+
+    if (formData.value.end_date) {
+      formData.value.end_date = formatDateForInput(formData.value.end_date);
+    }
   } else {
     resetForm();
   }
 }, { immediate: true });
 
+function formatDateForInput(dateString: string): string {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+    return dateString;
+  }
+
+  try {
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
+  } catch (error) {
+    console.error('Erro ao formatar data:', error);
+    return dateString;
+  }
+}
+
 function resetForm() {
   formData.value = { ...defaultFormData };
   if (form.value) {
-    form.value.resetValidation();
+    form.value.resetValidation?.();
   }
 }
 
@@ -164,7 +188,7 @@ function closeModal() {
 async function handleSubmit() {
   if (!form.value) return;
 
-  const { valid } = await form.value.validate();
+  const { valid } = await form.value.validate?.() || { valid: true };
 
   if (!valid) return;
 
