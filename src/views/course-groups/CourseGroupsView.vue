@@ -22,6 +22,7 @@
               label="Nome da Turma"
               hide-details
               density="compact"
+              @update:model-value="handleSearch"
             ></v-text-field>
           </v-col>
           <v-col cols="12" sm="4">
@@ -31,6 +32,7 @@
               type="date"
               hide-details
               density="compact"
+              @update:model-value="handleSearch"
             ></v-text-field>
           </v-col>
           <v-col cols="12" sm="4">
@@ -40,26 +42,8 @@
               type="date"
               hide-details
               density="compact"
+              @update:model-value="handleSearch"
             ></v-text-field>
-          </v-col>
-        </v-row>
-        <v-row class="mt-2">
-          <v-col cols="12" class="d-flex justify-end gap-2">
-            <v-btn
-              color="error"
-              variant="outlined"
-              prepend-icon="mdi-refresh"
-              @click="clearFilters"
-            >
-              Limpar
-            </v-btn>
-            <v-btn
-              color="primary"
-              prepend-icon="mdi-magnify"
-              @click="handleSearch"
-            >
-              Buscar
-            </v-btn>
           </v-col>
         </v-row>
       </v-card-text>
@@ -173,6 +157,7 @@ const filters = ref({
   endDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0]
 })
 
+
 const deleteDialog = ref(false)
 const courseGroupToDelete = ref<CourseGroup | null>(null)
 const deleting = ref(false)
@@ -181,6 +166,7 @@ const snackbar = ref({
   text: '',
   color: 'success'
 })
+
 
 const modalOpen = ref(false)
 const selectedCourse = ref<CourseGroup | null>(null)
@@ -211,6 +197,7 @@ const fetchCourseGroups = async () => {
   }
 }
 
+
 const openModal = (course: CourseGroup | null = null) => {
   selectedCourse.value = course ? { ...course } : null
   modalOpen.value = true
@@ -237,15 +224,6 @@ const handleFormSubmit = async (formData: CourseGroup) => {
 const handleSearch = () => {
   pagination.value.page = 1
   fetchCourseGroups()
-}
-
-const clearFilters = () => {
-  filters.value = {
-    name: '',
-    startDate: new Date().toISOString().split('T')[0],
-    endDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0]
-  }
-  handleSearch()
 }
 
 const handlePageChange = (page: number) => {
