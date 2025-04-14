@@ -6,14 +6,13 @@
         <v-btn
           color="primary"
           prepend-icon="mdi-plus"
-          @click="router.push({ name: 'course-group-create' })"
+          @click="openModal()"
         >
           Cadastrar Turma
         </v-btn>
       </v-col>
     </v-row>
 
-    <!-- Filtros -->
     <v-card class="mb-4">
       <v-card-text>
         <v-row>
@@ -72,7 +71,7 @@
             icon
             variant="text"
             color="primary"
-            @click="router.push({ name: 'course-group-edit', params: { id: item.id } })"
+            @click="openModal(item)"
           >
             <v-icon>mdi-pencil</v-icon>
           </v-btn>
@@ -88,7 +87,6 @@
       </v-data-table>
     </v-card>
 
-    <!-- Dialog de confirmação para exclusão -->
     <v-dialog v-model="deleteDialog" max-width="500px">
       <v-card>
         <v-card-title class="text-h5">Confirmar exclusão</v-card-title>
@@ -113,6 +111,13 @@
       </v-card>
     </v-dialog>
 
+    <CourseModal
+      v-model="modalOpen"
+      :course-data="selectedCourse"
+      :transition="'dialog-bottom-transition'"
+      @submit="handleFormSubmit"
+    />
+
     <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="3000">
       {{ snackbar.text }}
       <template v-slot:actions>
@@ -124,12 +129,21 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { courseService } from '@/services/courseService.ts'
+import CourseModal from '@/components/course-groups/modalCourse.vue'
 
-const router = useRouter()
+interface CourseGroup {
+  id?: number;
+  name: string;
+  description: string;
+  start_date: string;
+  end_date: string;
+  max_students: number;
+  activeStudentsCount?: number;
+}
+
 const loading = ref(false)
-const courseGroups = ref([])
+const courseGroups = ref<CourseGroup[]>([])
 const total = ref(0)
 
 const pagination = ref({
@@ -144,13 +158,17 @@ const filters = ref({
 })
 
 const deleteDialog = ref(false)
-const courseGroupToDelete = ref(null)
+const courseGroupToDelete = ref<CourseGroup | null>(null)
 const deleting = ref(false)
 const snackbar = ref({
   show: false,
   text: '',
   color: 'success'
 })
+
+// Estado para o modal
+const modalOpen = ref(false)
+const selectedCourse = ref<CourseGroup | null>(null)
 
 const headers = [
   { title: 'Nome', key: 'name' },
@@ -178,6 +196,31 @@ const fetchCourseGroups = async () => {
   }
 }
 
+// Função para abrir o modal (para adicionar ou editar)
+const openModal = (course: CourseGroup | null = null) => {
+  selectedCourse.value = course ? { ...course } : null
+  modalOpen.value = true
+}
+
+// Função para lidar com o envio do formulário
+const handleFormSubmit = async (formData: CourseGroup) => {
+  loading.value = true
+  try {
+    if (formData.id) {
+      await courseService.update(formData.id, formData)
+      showSnackbar('Turma atualizada com sucesso')
+    } else {
+      await courseService.create(formData)
+      showSnackbar('Turma cadastrada com sucesso')
+    }
+    fetchCourseGroups()
+  } catch (error) {
+    showSnackbar(`Erro ao ${formData.id ? 'atualizar' : 'cadastrar'} turma`, 'error')
+  } finally {
+    loading.value = false
+  }
+}
+
 const handleSearch = () => {
   pagination.value.page = 1
   fetchCourseGroups()
@@ -192,7 +235,7 @@ const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString()
 }
 
-const openDeleteDialog = (courseGroup: any) => {
+const openDeleteDialog = (courseGroup: CourseGroup) => {
   courseGroupToDelete.value = courseGroup
   deleteDialog.value = true
 }
