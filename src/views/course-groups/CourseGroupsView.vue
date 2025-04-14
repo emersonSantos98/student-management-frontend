@@ -231,8 +231,19 @@ const handlePageChange = (page: number) => {
   fetchCourseGroups()
 }
 
-const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString()
+function formatDate(dateString: string): string {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+    return dateString;
+  }
+
+  try {
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
+  } catch (error) {
+    console.error('Erro ao formatar data:', error);
+    return dateString;
+  }
+
 }
 
 const openDeleteDialog = (courseGroup: CourseGroup) => {
@@ -248,9 +259,10 @@ const confirmDelete = async () => {
     await courseService.delete(courseGroupToDelete.value.id)
     deleteDialog.value = false
     showSnackbar('Turma excluída com sucesso')
-    fetchCourseGroups()
-  } catch (error) {
-    showSnackbar('Erro ao excluir turma', 'error')
+    await fetchCourseGroups()
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.message || 'Erro ao excluir turma'
+    showSnackbar(errorMessage, 'error')
   } finally {
     deleting.value = false
   }
