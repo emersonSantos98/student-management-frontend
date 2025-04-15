@@ -1,16 +1,26 @@
 import api from './api'
 
-export interface Student {
-  id?: number
-  name: string
-  email: string
-  ra: string
-  cpf: string
+interface Student {
+  id?: string;
+  name: string;
+  email: string;
+  ra: string;
+  cpf: string;
+  courseGroupIds: string[];
 }
 
+interface QueryParams {
+  page?: number;
+  limit?: number;
+  name?: string;
+  email?: string;
+  ra?: string;
+}
+
+
 export const studentService = {
-  getAll: async () => {
-    const response = await api.get('/students')
+  getAll: async (params: QueryParams = {}) => {
+    const response = await api.get('/students', { params })
     return response.data
   },
 
