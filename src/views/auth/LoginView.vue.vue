@@ -1,9 +1,16 @@
 <template>
   <v-container class="fill-height" fluid>
     <v-row align="center" justify="center">
-      <v-col cols="12" sm="8" md="4">
-        <h1 className="text-3xl font-bold text-gray-900 animate-fade-in">
-          +A Educação
+      <v-col cols="12" sm="8" md="4" class="text-center" >
+        <h1 class="text-h4 font-weight-bold mb-12 primary--text">
+          <v-icon
+            class="mr-2"
+            size="48"
+            color="primary"
+          >
+            mdi-school
+          </v-icon>
+          Sistema de Gestão Escolar
         </h1>
         <v-card class="elevation-12">
           <v-toolbar color="primary" dark flat>
@@ -69,8 +76,9 @@ import api from '@/services/api'
 
 const router = useRouter()
 const form = ref(null)
-const email = ref('')
-const password = ref('')
+const email = ref('admin@example.com')
+
+const password = ref('@123456')
 const loading = ref(false)
 const errorSnackbar = ref({
   show: false,
