@@ -102,10 +102,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, onMounted, defineProps, defineEmits } from 'vue';
-import { courseService } from '@/services/courseService.ts';
-import { enrollmentService } from '@/services/enrollmentService.ts';
-
+import { ref, reactive, computed, watch, onMounted } from 'vue';
+import { courseService } from '@/services/courseService';
+import { enrollmentService } from '@/services/enrollmentService';
+import { VForm } from 'vuetify/components';
 interface CourseGroup {
   id: string;
   name: string;
@@ -115,8 +115,8 @@ interface Student {
   id?: string;
   name: string;
   email: string;
-  ra: string;
-  cpf: string;
+  ra?: string;
+  cpf?: string;
   courseGroupIds: string[];
   enrollments?: Array<{
     id: string;
@@ -161,7 +161,7 @@ const isOpen = computed({
 
 const isEditMode = computed(() => !!props.studentData?.id);
 
-const form = ref(null);
+const form = ref<InstanceType<typeof VForm> | null>(null);
 const loading = ref(false);
 const loadingCourseGroups = ref(false);
 const courseGroups = ref<CourseGroup[]>([]);
