@@ -104,6 +104,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted, defineProps, defineEmits } from 'vue';
 import { courseService } from '@/services/courseService.ts';
+import { enrollmentService } from '@/services/enrollmentService.ts';
 
 interface CourseGroup {
   id: string;
@@ -125,6 +126,15 @@ interface Student {
       name: string;
     }
   }>;
+}
+
+interface Enrollment {
+  id: string;
+  status: string;
+  courseGroup: {
+    id: string;
+    name: string;
+  }
 }
 
 const props = defineProps({
@@ -155,6 +165,8 @@ const form = ref(null);
 const loading = ref(false);
 const loadingCourseGroups = ref(false);
 const courseGroups = ref<CourseGroup[]>([]);
+const currentEnrollments = ref<Enrollment[]>([]);
+const removedEnrollmentIds = ref<string[]>([]);
 
 const defaultFormData: Student = {
   name: '',
@@ -168,14 +180,17 @@ const formData = reactive<Student>({ ...defaultFormData });
 
 watch(() => props.studentData, (newData) => {
   if (newData) {
-    const activeGroupIds = newData.enrollments
-      ?.filter(enrollment => enrollment.status === 'active')
-      .map(enrollment => enrollment.courseGroup.id) || [];
+    const activeEnrollments = newData.enrollments?.filter(
+      enrollment => enrollment.status === 'active'
+    ) || [];
+
+    currentEnrollments.value = activeEnrollments;
+    removedEnrollmentIds.value = [];
 
     Object.assign(formData, {
       ...defaultFormData,
       ...newData,
-      courseGroupIds: activeGroupIds
+      courseGroupIds: activeEnrollments.map(e => e.courseGroup.id)
     });
 
     if (formData.cpf) {
@@ -186,9 +201,25 @@ watch(() => props.studentData, (newData) => {
   }
 }, { immediate: true });
 
+watch(() => formData.courseGroupIds, (newIds, oldIds) => {
+  if (!isEditMode.value || !oldIds) return;
+
+  const removedGroupIds = oldIds.filter(id => !newIds.includes(id));
+
+  removedGroupIds.forEach(groupId => {
+    const enrollment = currentEnrollments.value.find(
+      e => e.courseGroup.id === groupId
+    );
+    if (enrollment) {
+      removedEnrollmentIds.value.push(enrollment.id);
+    }
+  });
+});
 
 function resetForm() {
   Object.assign(formData, { ...defaultFormData });
+  currentEnrollments.value = [];
+  removedEnrollmentIds.value = [];
   if (form.value) {
     form.value.resetValidation?.();
   }
@@ -203,7 +234,7 @@ function formatCPF() {
   if (!formData.cpf) return;
 
   const cpfDigits = formData.cpf.replace(/\D/g, '');
-  
+
   if (cpfDigits.length <= 11) {
     let formattedCPF = '';
     for (let i = 0; i < cpfDigits.length; i++) {
@@ -237,6 +268,10 @@ async function handleSubmit() {
   loading.value = true;
 
   try {
+    for (const enrollmentId of removedEnrollmentIds.value) {
+      await enrollmentService.delete(enrollmentId);
+    }
+
     const submissionData = {
       ...formData,
       cpf: formData.cpf.replace(/\D/g, '')
@@ -256,6 +291,7 @@ async function handleSubmit() {
     loading.value = false;
   }
 }
+
 
 onMounted(() => {
   fetchCourseGroups();
