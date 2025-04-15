@@ -60,6 +60,9 @@
         @update:page="handlePageChange"
         class="elevation-1"
       >
+        <template v-slot:item.description="{ item }">
+          {{ truncateText(item.description, 30) }}
+        </template>
         <template v-slot:item.start_date="{ item }">
           {{ formatDate(item.start_date) }}
         </template>
@@ -244,6 +247,11 @@ function formatDate(dateString: string): string {
     return dateString;
   }
 
+}
+
+function truncateText(text: string, maxLength: number): string {
+  if (!text) return '';
+  return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
 }
 
 const openDeleteDialog = (courseGroup: CourseGroup) => {
