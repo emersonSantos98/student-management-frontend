@@ -153,6 +153,18 @@ interface Student {
   courseGroups?: CourseGroup[];
 }
 
+interface APIError {
+  response?: {
+    data?: {
+      message?: string;
+      errors?: Array<{
+        field: string;
+        message: string;
+      }>;
+    };
+  };
+}
+
 const loading = ref(false)
 const students = ref<Student[]>([])
 const total = ref(0)
@@ -221,17 +233,20 @@ const handleFormSubmit = async (formData: Student) => {
       showSnackbar('Estudante cadastrado com sucesso')
     }
     fetchStudents()
-  } catch (error: any) {
-    if (error.response?.data) {
-      const errorData = error.response.data;
+  } catch (error: APIError | unknown) {
+    if (error && typeof error === 'object' && 'response' in error) {
+      const apiError = error as APIError;
+      if (apiError.response?.data) {
+        const errorData = apiError.response.data;
 
-      if (errorData.errors && Array.isArray(errorData.errors)) {
-        const errorMessages = errorData.errors.map(err => `${err.field}: ${err.message}`).join('\n');
-        showSnackbar(errorMessages, 'error');
-      } else if (errorData.message) {
-        showSnackbar(errorData.message, 'error');
-      } else {
-        showSnackbar(`Erro ao ${formData.id ? 'atualizar' : 'cadastrar'} estudante`, 'error');
+        if (errorData.errors && Array.isArray(errorData.errors)) {
+          const errorMessages = errorData.errors.map(err => `${err.field}: ${err.message}`).join('\n');
+          showSnackbar(errorMessages, 'error');
+        } else if (errorData.message) {
+          showSnackbar(errorData.message, 'error');
+        } else {
+          showSnackbar(`Erro ao ${formData.id ? 'atualizar' : 'cadastrar'} estudante`, 'error');
+        }
       }
     } else {
       showSnackbar(`Erro ao ${formData.id ? 'atualizar' : 'cadastrar'} estudante`, 'error');
