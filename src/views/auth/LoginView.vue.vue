@@ -2,9 +2,12 @@
   <v-container class="fill-height" fluid>
     <v-row align="center" justify="center">
       <v-col cols="12" sm="8" md="4">
+        <h1 className="text-3xl font-bold text-gray-900 animate-fade-in">
+          +A Educação
+        </h1>
         <v-card class="elevation-12">
           <v-toolbar color="primary" dark flat>
-            <v-toolbar-title>Login</v-toolbar-title>
+            <v-toolbar-title> Login Administrativo</v-toolbar-title>
           </v-toolbar>
           <v-card-text>
             <v-form @submit.prevent="login" ref="form">
@@ -110,3 +113,4 @@ const login = async () => {
   }
 }
 </script>
+
