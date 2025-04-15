@@ -115,8 +115,8 @@ interface Student {
   id?: string;
   name: string;
   email: string;
-  ra?: string;
-  cpf?: string;
+  ra?: string | null;
+  cpf?: string | null;
   courseGroupIds: string[];
   enrollments?: Array<{
     id: string;
@@ -233,7 +233,7 @@ function closeModal() {
 function formatCPF() {
   if (!formData.cpf) return;
 
-  const cpfDigits = formData.cpf.replace(/\D/g, '');
+  const cpfDigits = (formData.cpf ?? '').replace(/\D/g, '');
 
   if (cpfDigits.length <= 11) {
     let formattedCPF = '';
@@ -274,16 +274,16 @@ async function handleSubmit() {
 
     const submissionData = {
       ...formData,
-      cpf: formData.cpf.replace(/\D/g, '')
+      cpf: formData.cpf?.replace(/\D/g, '')
     };
 
-
     if (isEditMode.value) {
-      delete submissionData.ra;
-      delete submissionData.cpf;
+      const { ra, cpf, ...dataToSubmit } = submissionData;
+      emit('submit', dataToSubmit);
+    } else {
+      emit('submit', submissionData);
     }
 
-    emit('submit', submissionData);
     closeModal();
   } catch (error) {
     console.error('Erro ao salvar:', error);
