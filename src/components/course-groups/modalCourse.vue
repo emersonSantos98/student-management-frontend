@@ -94,8 +94,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, defineProps, defineEmits } from 'vue';
-
+import { ref, computed, watch } from 'vue';
+import { VForm } from 'vuetify/components';
 interface CourseGroup {
   id?: number;
   name: string;
@@ -130,7 +130,7 @@ const isOpen = computed({
 
 const isEditMode = computed(() => !!props.courseData?.id);
 
-const form = ref(null);
+const form = ref<InstanceType<typeof VForm> | null>(null);
 const loading = ref(false);
 
 const defaultFormData: CourseGroup = {
