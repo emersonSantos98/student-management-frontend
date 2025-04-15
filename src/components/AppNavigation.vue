@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer color="primary" v-model="drawer" :rail="rail" permanent>
+  <v-navigation-drawer color="#00928e" v-model="drawer" :rail="rail" permanent>
     <div class="pa-2">
       <v-btn
         variant="text"

@@ -1,19 +1,16 @@
 <template>
+<div class="login-wrapper">
   <v-container class="fill-height" fluid>
     <v-row align="center" justify="center">
       <v-col cols="12" sm="8" md="4" class="text-center" >
-        <h1 class="text-h4 font-weight-bold mb-12 primary--text">
-          <v-icon
-            class="mr-2"
-            size="48"
-            color="primary"
-          >
-            mdi-school
-          </v-icon>
-          Sistema de Gestão Escolar
-        </h1>
+       <h1 class="text-h4  font-weight-bold mb-12 white--text">
+            <v-icon class="mr-2" size="48" color="white">
+              mdi-school
+            </v-icon>
+          <span class="text-white">Sistema de Gestão Escolar</span>
+          </h1>
         <v-card class="elevation-12">
-          <v-toolbar color="primary" dark flat>
+          <v-toolbar color="#00928e" dark flat>
             <v-toolbar-title> Login Administrativo</v-toolbar-title>
           </v-toolbar>
           <v-card-text>
@@ -40,7 +37,7 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn
-              color="primary"
+              color="#00928e"
               @click="login"
               :loading="loading"
             >
@@ -67,6 +64,7 @@
       </template>
     </v-snackbar>
   </v-container>
+   </div>
 </template>
 
 <script setup lang="ts">
@@ -122,3 +120,20 @@ const login = async () => {
 }
 </script>
 
+<style scoped>
+.login-wrapper {
+  background-image: linear-gradient(
+    rgba(0, 0, 0, 0.7),
+    rgba(0, 0, 0, 0.5)
+  ), url('@/assets/fundo.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.white--text {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+</style>

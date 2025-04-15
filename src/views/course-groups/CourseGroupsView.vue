@@ -4,7 +4,7 @@
       <v-col cols="12" class="d-flex justify-space-between align-center">
         <h1>Consulta de Turmas</h1>
         <v-btn
-          color="primary"
+          color="#00928e"
           prepend-icon="mdi-plus"
           @click="openModal()"
         >
@@ -73,7 +73,7 @@
           <v-btn
             icon
             variant="text"
-            color="primary"
+            color="#00928e"
             @click="openModal(item)"
           >
             <v-icon>mdi-pencil</v-icon>

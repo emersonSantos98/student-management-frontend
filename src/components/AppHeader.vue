@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar color="primary">
+  <v-app-bar color="#00928e">
     <v-app-bar-title>Sistema de Gerenciamento de Alunos</v-app-bar-title>
     <v-spacer></v-spacer>
     <v-btn v-if="isAuthenticated" icon @click="logout">
